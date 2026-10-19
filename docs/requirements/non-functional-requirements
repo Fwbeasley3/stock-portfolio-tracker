@@ -1,0 +1,220 @@
+Stock Portfolio Tracker — Non-Functional Requirements
+Status: Approved — streamlined MVP baseline
+Technology: Java 21, Spring Boot, PostgreSQL, REST, gRPC
+Scope and priorities
+All 13 NFR identifiers are retained. MVP items are required for the first working release; Enhancements are planned after the application works; Future items are intentionally out of scope. Approval records a design decision, not proof of implementation. Numeric targets are goals until measured.
+
+These NFRs do not change the approved functional requirements. In particular, preserve authenticated portfolio ownership; configurable concurrency-safe limits of 100 portfolios per user and 500 unique holdings per portfolio; supported U.S.-listed USD stocks/ETFs; fractional shares to six decimal places; weighted-average cost; immutable holding security identity; BigDecimal/HALF_EVEN calculations; and honest partial valuations. Pricing must distinguish provider observation time from local cache age, use an initial configurable 15-second intraday cache TTL, limit stale intraday fallback to a configurable initial five-minute observation age, and treat official closing prices separately after hours. The functional requirements document remains authoritative for detailed business rules.
+NFR-001: API Performance
+Status: Approved — MVP Scope | Priority: High
+
+Description: Deliver responsive operations and baseline performance visibility without requiring extensive benchmarking before MVP.
+MVP acceptance criteria
+1. CRUD operations do not unnecessarily invoke the Pricing Service.
+2. Valuations use the Pricing gRPC Service and eligible cached prices.
+3. Database and outbound service operations use configurable timeouts/deadlines.
+4. Basic REST latency and HTTP response status metrics are available.
+5. Avoid obvious N+1 database queries and duplicate price fetches within a valuation.
+6. Record representative baseline timings for CRUD, cached valuations, and provider-backed valuations.
+Initial performance goals — not MVP release gates
+Workload	p95 goal
+Portfolio/holding CRUD	≤ 300 ms
+Cached portfolio valuation	≤ 500 ms
+Provider-dependent valuation	≤ 2 seconds
+
+
+Measurements must identify workload, dataset, environment, and cache status.
+
+Enhancements: k6/JMeter load testing at 20/50/100 concurrent virtual users; p50/p95/p99, throughput, errors, bottleneck tuning.
+Future: Production SLOs, distributed load tests, automated performance gates.
+NFR-002: Scalability
+Status: Approved — MVP Scope | Priority: Medium
+
+Description: Avoid barriers to growth without implementing multi-instance infrastructure initially.
+MVP acceptance criteria
+1. The REST API is stateless; no server-local user session is required.
+2. Portfolio REST API and Pricing gRPC Service deploy independently.
+3. Ports, service addresses, resource limits, and HikariCP pool settings are configurable.
+4. Concurrent requests preserve NFR-006 data integrity.
+5. The Pricing Service uses configurable caching and respects provider rate limits.
+6. Document per-instance local-cache limitations for potential future replicas.
+Enhancements: 20/50/100-user testing, pool utilization measurements, bounded parallel pricing, cache tradeoff analysis.
+Future: Multiple replicas, load balancers, distributed cache, Kubernetes, autoscaling.
+NFR-003: Reliability and Resilience
+Status: Approved — MVP Scope | Priority: High
+
+Description: Handle dependency failures without misleading users about market prices or valuation completeness.
+MVP acceptance criteria
+1. Configure HTTP timeouts and gRPC deadlines to avoid indefinite waits.
+2. Use bounded retries for eligible transient/idempotent calls only (initial maximum two retries, with backoff); do not retry invalid symbols or validation failures.
+3. Distinguish provider quote observation age from local cache age and expose fresh/delayed/stale status.
+4. On provider outage during market hours, allow stale intraday prices only within the configured observation-age maximum (initially five minutes), clearly marked stale.
+5. Use valid official closing prices under separate after-hours eligibility rules.
+6. Return unavailable-price details and partial valuations rather than fabricated complete totals.
+7. Map dependency failures to meaningful errors and log them without secrets.
+8. Bound retries and outbound requests to respect provider quotas.
+Enhancements: Resilience4j circuit breakers, fallback metrics, outage/recovery tests, retry tuning.
+Future: Multi-provider failover and chaos engineering infrastructure.
+NFR-004: Security
+Status: Approved — MVP Scope | Priority: High
+
+Description: Protect portfolios, tokens, credentials, and service interfaces.
+MVP acceptance criteria
+1. Validate JWT signature, issuer, audience, and expiration using Spring Security OAuth2 Resource Server.
+2. Require authentication and enforce portfolio/holding ownership at service and data-access boundaries.
+3. Never accept user-supplied ownership as authorization.
+4. Validate inputs and avoid leaking secrets or stack traces in errors/logs.
+5. Externalize secrets; do not commit them to Git or bake them into container images.
+6. Use least-privilege database/provider credentials.
+7. Use TLS for remotely deployed services; isolated local development may use HTTP.
+8. Test invalid/missing tokens and cross-user access attempts.
+Enhancements: Dependency scanning and deeper security tests.
+Future: Custom identity infrastructure and enterprise policy/secrets platforms.
+NFR-005: Observability and Monitoring
+Status: Approved — MVP Scope | Priority: Medium
+
+Description: Make requests diagnosable without requiring a full monitoring stack on day one.
+MVP acceptance criteria
+1. Produce consistent structured logs without sensitive tokens or API keys.
+2. Propagate trace context (trace and span IDs) across REST, gRPC, and relevant outbound HTTP calls.
+3. Expose basic health checks and Micrometer metrics for REST latency/errors and pricing/cache activity.
+4. Document how to inspect local logs and correlation identifiers.
+5. Avoid unbounded high-cardinality metrics labels such as user IDs or ticker symbols.
+Enhancements: Jaeger/OpenTelemetry visualization, Prometheus/Grafana dashboards, detailed provider/cache/pool/circuit-breaker metrics.
+Future: Centralized production alerting and enterprise telemetry platforms.
+NFR-006: Data Integrity and Consistency
+Status: Approved — MVP Scope | Priority: High
+
+Description: Preserve ownership, financial correctness, and consistency under concurrent operations.
+MVP acceptance criteria
+1. Use PostgreSQL, JPA, and transactions for multi-step writes.
+2. Enforce ownership, foreign keys, required fields, and uniqueness through appropriate database constraints and application checks.
+3. Use @Version or equivalent conflict protection for concurrent portfolio/holding modifications.
+4. Enforce configurable 100-portfolio/user and 500-unique-holding/portfolio limits safely under concurrent creation.
+5. Use BigDecimal and approved calculation/rounding rules; no floating-point financial arithmetic.
+6. Preserve weighted-average cost rules and immutable holding security identity.
+7. Apply versioned Flyway migrations.
+8. Test rollback, uniqueness, concurrent updates, and capacity limits against PostgreSQL.
+9. Avoid holding database transactions open while awaiting external pricing calls.
+Enhancements: Isolation/deadlock experiments and deeper concurrency stress tests.
+Future: Distributed transactions and event sourcing.
+NFR-007: Testing and Quality Assurance
+Status: Approved — MVP Scope | Priority: High
+
+Description: Verify critical business behavior and service boundaries with a manageable test suite.
+MVP acceptance criteria
+1. Unit-test valuation math, weighted-average cost, validation, price freshness, and partial results.
+2. Integration-test REST behavior, JWT/ownership, persistence, and Flyway migrations.
+3. Use PostgreSQL Testcontainers for database-specific integration behavior.
+4. Test gRPC contracts/service behavior using an in-process server or equivalent.
+5. Stub external market data; CI must not depend on a live provider.
+6. Test important failure paths, timeouts, and concurrent write conflicts.
+7. Provide a documented Maven test command and deterministic core suite.
+Enhancements: JaCoCo and an ~80% core business-logic coverage target (not a release gate), broader WireMock/resilience/load suites.
+Future: Enterprise contract testing and large test environments.
+NFR-008: Deployment and Portability
+Status: Approved — MVP Scope | Priority: Medium
+
+Description: Run locally and reproducibly without requiring paid cloud infrastructure.
+MVP acceptance criteria
+1. Build both Java 21 services using Maven.
+2. Containerize both application services.
+3. Provide Docker Compose for the services and PostgreSQL.
+4. Persist PostgreSQL data with a named volume.
+5. Document startup, migrations, configuration, and health checks.
+6. Do not require AWS, Kubernetes, or paid monitoring for MVP.
+7. Document any provider account/key prerequisites and verify provider pricing before claiming a free integration.
+Enhancements: Optional local observability profile, CI pipeline, optional AWS deployment with cost controls.
+Future: Kubernetes, managed infrastructure, production-grade deployment automation.
+NFR-009: Maintainability and Code Quality
+Status: Approved — MVP Scope | Priority: Medium
+
+Description: Keep responsibilities clear and implementation understandable.
+MVP acceptance criteria
+1. Separate transport/controllers, application services, domain, and persistence/integration code.
+2. Portfolio API owns portfolios, holdings, authorization, and valuation; Pricing Service owns provider integration, price freshness, and caching.
+3. Version OpenAPI and .proto contracts with the code.
+4. Apply consistent validation, errors, naming, and configuration.
+5. Document significant architectural tradeoffs briefly.
+6. Maintain README build/run/test instructions.
+7. Prefer small reviewable changes and avoid speculative abstractions.
+Enhancements: Additional ADRs, static analysis, architecture tests.
+Future: Complex plugin architectures and enterprise governance.
+NFR-010: Availability and Recovery
+Status: Approved — MVP Scope | Priority: Medium
+
+Description: Support predictable local operation and data persistence without promising production uptime.
+MVP acceptance criteria
+1. Expose health endpoints.
+2. Keep PostgreSQL data persistent across container recreation.
+3. Shut down cleanly and release managed resources.
+4. Document local restart/recovery steps.
+5. Document a basic pg_dump/pg_restore procedure; automation and a validated recovery drill are not MVP gates.
+Enhancements: Backup/restore drill, restart/readiness tests, evaluation of 30-minute RTO and 24-hour RPO planning targets with an actual backup schedule.
+Future: Formal SLAs, automated failover, disaster recovery and multi-region redundancy.
+
+Note: A Docker volume alone does not provide a 24-hour RPO. Targets are not guarantees until tested.
+NFR-011: Configuration and Environment Management
+Status: Approved — MVP Scope | Priority: Medium
+
+Description: Keep settings reproducible, validated, and separate from source code.
+MVP acceptance criteria
+1. Use Spring YAML/profiles and environment-variable overrides.
+2. Group related settings with validated @ConfigurationProperties.
+3. Externalize DB, identity-provider, market-provider, service endpoint, timeout, cache TTL, maximum stale observation age, and pool settings.
+4. Fail startup on invalid/missing required settings rather than unsafe silent defaults.
+5. Include a sanitized .env.example and environment setup instructions.
+6. Never commit or log secrets.
+Enhancements: Broader configuration validation and tests.
+Future: Central configuration and enterprise secrets infrastructure.
+NFR-012: Resource Management and Concurrency
+Status: Approved — MVP Scope | Priority: Medium
+
+Description: Bound resource usage and protect concurrent operations without premature concurrency frameworks.
+MVP acceptance criteria
+1. Use managed HikariCP connections and reuse gRPC channels and appropriate HTTP connections.
+2. Limit concurrent provider calls and respect provider rate limits independently of thread counts.
+3. Maintain correct simultaneous portfolio/holding updates and capacity enforcement (NFR-006).
+4. Apply network deadlines/timeouts.
+5. Manage and close application-owned executors and clients on shutdown.
+6. Avoid uncontrolled thread creation, unbounded queues, and long DB transactions around network calls.
+7. If parallel pricing is implemented in MVP, explicitly bound its concurrency and aggregate partial results safely.
+Enhancements: CompletableFuture fan-out, executor metrics, concurrency benchmarks, virtual-thread vs platform-thread experiments.
+Future: Adaptive concurrency, distributed scheduling, advanced backpressure.
+
+Note: Virtual threads do not replace provider quotas, connection pools, or concurrency limits.
+NFR-013: API Compatibility and Versioning
+Status: Approved — MVP Scope | Priority: Medium
+
+Description: Establish stable, versioned contracts without supporting multiple live versions initially.
+MVP acceptance criteria
+1. Version REST routes as /api/v1 and protobuf packages as pricing.v1 (or equivalent agreed names).
+2. Document REST with OpenAPI and gRPC with version-controlled .proto files.
+3. Use consistent validation, HTTP status codes, and error contracts.
+4. Preserve protobuf field numbers/types during compatible evolution; reserve removed field numbers and names.
+5. Review REST field removals/renames, new required fields, and semantic changes as potentially breaking.
+6. Test important REST/gRPC contract behavior; never hand-edit generated code.
+Enhancements: More automated compatibility tests and contract-change review.
+Future: Multiple active versions, formal deprecation schedules, schema governance.
+Delivery sequence
+Phase	Focus	Exit condition
+1 — Foundation	Maven modules, Docker Compose, PostgreSQL/Flyway, config, health	Both services start and migrations run
+2 — Core domain	JWT ownership, portfolios, holdings, transactions, precision and limits	CRUD and domain tests pass
+3 — Pricing integration	gRPC, provider adapter, cache, freshness, fallback	End-to-end complete/partial valuations work
+4 — MVP quality	Tests, basic logs/traces/metrics, README, timing baseline	MVP criteria verified
+5 — Enhancements	Circuit breakers, dashboards, load tests, parallel pricing, virtual threads	Each improvement measured and documented
+
+
+MVP definition of done
+- [ ] Both services build, start, and communicate locally.
+- [ ] JWT authentication and ownership checks prevent cross-user access.
+- [ ] Portfolio/holding business rules and concurrency-safe limits are enforced.
+- [ ] Decimal calculations and partial/fresh/delayed/stale valuations are correct.
+- [ ] Provider failures do not produce misleading complete valuations.
+- [ ] Core unit and integration tests pass.
+- [ ] Health, basic metrics, structured logs, and cross-service trace context work.
+- [ ] Docker Compose and README work in a clean local setup.
+- [ ] Baseline timings are recorded; unverified targets are not claimed as achieved.
+- [ ] Deferred enhancements remain tracked separately.
+Scope control
+Favor a working end-to-end vertical slice over infrastructure built for hypothetical scale. Add enhancements when they solve an observed problem or meet a specific learning objective. Preserve approved functional business rules even when simplifying non-functional scope.
