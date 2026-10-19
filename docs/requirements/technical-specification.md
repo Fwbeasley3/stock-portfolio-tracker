@@ -1,21 +1,17 @@
-REST Client
+Client / Postman
 |
-| HTTP/JSON + Bearer JWT
+| HTTPS REST / JSON + Bearer JWT
 v
-API Gateway (Spring Boot)
-| - validates token and request shape
-| - converts JSON DTOs to Protobuf messages
-| - enforces RPC deadlines, maps errors to HTTP
-| - propagates cancellation and trace context
-|
-+---- unary gRPC ----> Portfolio Service ----> PostgreSQL
-|                        - tenant-scoped queries
-|                        - transactional CRUD/upsert
-|                        - portfolio valuation aggregation
-|
-+---- unary gRPC ----> Market Data Service
-|                        - internal simulated price store
-|                        - deterministic mock price generator
-|
-+---- server-streaming gRPC (internal) ----> Market Data Service
-- scheduled simulated price ticks
+Portfolio Service (Spring Boot)
+- REST controllers and HTTP error responses
+- JWT authentication and portfolio ownership authorization
+- portfolio/holding business rules and transactional persistence
+- portfolio valuation and gRPC client
+  |                                   |
+  | JPA / JDBC                        | unary gRPC GetQuote
+  v                                   | server-streaming gRPC StreamPrices
+  PostgreSQL                               v
+  Market Data Service (Spring Boot)
+  - internal deterministic mock quotes
+  - background simulated price updates
+  - gRPC unary + server-streaming server
