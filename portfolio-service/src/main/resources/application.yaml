@@ -4,3 +4,16 @@ server:
 spring:
   application:
     name: portfolio-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/portfolio_tracker
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+    jpa:
+      hibernate:
+        ddl-auto: validate
+      open-in-view: false
+
+    flyway:
+      enabled: true

@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net">
   <diagram name="Page-1" id="cCEIrnjGSyVZ8faBT7i_">
-    <mxGraphModel dx="2438" dy="1681" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2110" dy="1509" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="1654" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -111,6 +111,15 @@
         </mxCell>
         <mxCell id="NqgZX5w_Sm2T5mN653mR-68" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 24px;&quot;&gt;0..*&lt;/font&gt;" vertex="1">
           <mxGeometry height="30" width="60" x="920" y="-120" as="geometry" />
+        </mxCell>
+        <mxCell id="0W9azghPet0bQJn6D8cu-2" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b style=&quot;background-color: transparent; color: light-dark(#000000, var(--ge-light-color, #ffffff));&quot;&gt;&lt;font size=&quot;3&quot;&gt;«Enumeration»&lt;/font&gt;&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;font size=&quot;3&quot;&gt;&lt;b&gt;TransactionType&lt;/b&gt;&lt;/font&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;font style=&quot;&quot; size=&quot;3&quot;&gt;&amp;nbsp;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;font style=&quot;&quot; size=&quot;3&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div style=&quot;height:2px;&quot;&gt;&lt;font size=&quot;3&quot;&gt;&amp;nbsp; BUY&lt;br&gt;&amp;nbsp; SELL&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="200" width="390" x="1000" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="0W9azghPet0bQJn6D8cu-9" edge="1" parent="1" source="NqgZX5w_Sm2T5mN653mR-9" style="endArrow=block;startArrow=none;endFill=0;startFill=0;endSize=8;html=1;verticalAlign=bottom;dashed=1;labelBackgroundColor=none;rounded=0;defaultLabelBackgroundColor=page;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="0W9azghPet0bQJn6D8cu-2" value="">
+          <mxGeometry relative="1" width="160" as="geometry">
+            <mxPoint x="1050" y="520" as="sourcePoint" />
+            <mxPoint x="1210" y="520" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
