@@ -30,8 +30,8 @@ class UserRepositorySpec extends Specification {
         registry.add("spring.datasource.password", postgres::getPassword)
     }
 
-    @Autowired UserRepository userRepository;
-    @Autowired EntityManager entityManager;
+    @Autowired UserRepository userRepository
+    @Autowired EntityManager entityManager
 
     def"Persist a user entity and retrieve by id"(){
         given: "Create a User entity"
