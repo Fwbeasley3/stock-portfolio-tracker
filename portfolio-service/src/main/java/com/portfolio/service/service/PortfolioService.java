@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,5 +34,11 @@ public class PortfolioService {
     public PortfolioEntity getPortfolio(Long portfolioId, Long userId) {
 
         return portfolioRepository.findByIdAndUserEntity_Id(portfolioId, userId).orElseThrow(() -> new PortfolioNotFoundException("Portfolio not found"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<PortfolioEntity> getPortfolios(Long userId) {
+
+        return portfolioRepository.findByUserEntity_Id(userId);
     }
 }

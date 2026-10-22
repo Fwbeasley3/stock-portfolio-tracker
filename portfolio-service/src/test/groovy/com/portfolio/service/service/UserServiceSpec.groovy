@@ -37,6 +37,4 @@ class UserServiceSpec extends Specification {
         1 * userRepository.save({it.externalAuthId == externalAuthId}) >> {UserEntity user -> user}
 
     }
-
-
 }
