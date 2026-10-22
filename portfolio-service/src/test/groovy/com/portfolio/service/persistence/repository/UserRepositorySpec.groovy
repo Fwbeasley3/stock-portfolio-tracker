@@ -73,13 +73,13 @@ class UserRepositorySpec extends Specification {
         retrievedUser.get().externalAuthId == userEntity.externalAuthId
     }
 
-    def"Persist a user entity and retrieve by externalAuthId that does not exist returns empty"(){
+    def"Return empty when externalAuthId doesn't match the existing user"(){
         given: "Create a User entity"
 
         UserEntity userEntity = new UserEntity("dummyId123")
 
         when: "The User is saved"
-        UserEntity savedUser= userRepository.save(userEntity)
+        userRepository.save(userEntity)
 
         entityManager.flush()
         entityManager.clear()
@@ -87,7 +87,7 @@ class UserRepositorySpec extends Specification {
         Optional<UserEntity> retrievedUser =
                 userRepository.findByExternalAuthId("nonexistingId")
 
-        then:"Verify the user was persisted with correct values"
+        then:"Verify no user matches the requested externalAuthId"
         retrievedUser.isEmpty()
     }
 }
