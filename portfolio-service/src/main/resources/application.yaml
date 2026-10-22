@@ -6,14 +6,15 @@ spring:
     name: portfolio-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/portfolio_tracker
+    url: jdbc:postgresql://localhost:5434/portfolio_db
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
-    jpa:
-      hibernate:
-        ddl-auto: validate
-      open-in-view: false
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
 
-    flyway:
-      enabled: true
+  flyway:
+    enabled: true
