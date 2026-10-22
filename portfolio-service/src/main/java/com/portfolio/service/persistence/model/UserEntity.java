@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @Entity
 @Table(name = "app_user")
@@ -16,9 +17,14 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "externalAuthId", nullable = false, unique = true)
+    @Column(name = "external_auth_id", nullable = false, unique = true)
     private String externalAuthId;
 
-    @Column(name = "createdAt", nullable = false)
+    @Column(name = "created_at", nullable = false)
     private Instant createdAt;
+
+    public UserEntity(String externalAuthId) {
+        this.externalAuthId = Objects.requireNonNull(externalAuthId, "External authentication ID cannot be null");
+        this.createdAt = Instant.now();
+    }
 }
