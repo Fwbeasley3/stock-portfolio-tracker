@@ -1,5 +1,6 @@
 package com.portfolio.service.service
 
+import com.portfolio.service.exception.PortfolioNotFoundException
 import com.portfolio.service.persistence.model.PortfolioEntity
 import com.portfolio.service.persistence.model.UserEntity
 import com.portfolio.service.persistence.model.repository.PortfolioRepository
@@ -47,8 +48,25 @@ class PortfolioServiceSpec extends Specification {
         result.userEntity == userEntity
     }
 
+    def "Retrieve a portfolio for a user that doesn't exist"() {
+        given: "A user has a portfolio"
+
+        Long portfolioId = 1L
+        Long userId = 999L
+
+        when: "The user want to retrieve a single portfolio they have"
+        portfolioService.getPortfolio(portfolioId, userId)
+
+        then: "Verify our interactions and that the portfolio was retrieved for the correct user"
+        1 * portfolioRepository.findByIdAndUserEntity_Id(portfolioId, userId) >> Optional.empty()
+
+        and: "The service PortfolioNotFoundException is thrown"
+        PortfolioNotFoundException ex = thrown(PortfolioNotFoundException)
+        ex.message.contains("Portfolio not found")
+    }
+
     def "Retrieve all portfolios for a user"() {
-        given: "A user has multiple portfolioa"
+        given: "A user has multiple portfolios"
 
         String externalAuthId = "dummyId123"
         String portfolioName1 = "Retirement"

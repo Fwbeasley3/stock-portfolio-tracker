@@ -1,0 +1,109 @@
+openapi: 3.0.3
+
+info:
+  title: Portfolio Tracker API
+  description: REST API for Managing Investment Portfolios
+  version: 1.0.0
+
+servers:
+  - url: /api/v1
+
+paths:
+  /portfolios:
+    post:
+      tags:
+        - Portfolios
+      summary: Create a portfolio
+      operationId: createPortfolio
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePortfolioRequest'
+      responses:
+        '201':
+          description: Portfolio created successfully
+          headers:
+            Location:
+              description: URI of the newly created portfolio
+              required: true
+              schema:
+                type: string
+                format: uri-reference
+              example: /api/v1/portfolios/1
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioResponse'
+        '400':
+          description: Invalid request
+    get:
+      tags:
+        - Portfolios
+      summary: Retrieve all portfolios for the authenticated user
+      operationId: getPortfolios
+      responses:
+        '200':
+          description: Portfolios retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PortfolioResponse'
+  /portfolios/{portfolioId}:
+    get:
+      tags:
+        - Portfolios
+      summary: Retrieve a portfolio by ID
+      operationId: getPortfolio
+      parameters:
+        - name: portfolioId
+          in: path
+          required: true
+          description: Unique identifier of the portfolio
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Portfolio retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioResponse'
+        '404':
+          description: Portfolio not found
+
+components:
+  schemas:
+    CreatePortfolioRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+          example: Retirement
+
+    PortfolioResponse:
+      type: object
+      required:
+        - id
+        - name
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        name:
+          type: string
+          example: Retirement
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-10-22T15:30:00Z'

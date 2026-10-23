@@ -1,0 +1,12 @@
+{
+  "apiPackage": "com.portfolio.service.api",
+  "modelPackage": "com.portfolio.service.api.model",
+  "invokerPackage": "com.portfolio.service.api.invoker",
+  "delegatePattern": true,
+  "useSpringBoot3": true,
+  "useTags": true,
+  "dateLibrary": "java8",
+  "useBeanValidation": true,
+  "openApiNullable": false,
+  "documentationProvider": "none"
+}
