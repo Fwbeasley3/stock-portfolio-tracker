@@ -75,6 +75,53 @@ paths:
                 $ref: '#/components/schemas/PortfolioResponse'
         '404':
           description: Portfolio not found
+    patch:
+      tags:
+        - Portfolios
+      summary: Update an existing portfolio
+      operationId: updatePortfolio
+      parameters:
+        - name: portfolioId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePortfolioRequest'
+      responses:
+        '200':
+          description: Portfolio renamed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioResponse'
+        '400':
+          description: Invalid request
+        '404':
+          description: Portfolio not found
+    delete:
+      tags:
+        - Portfolios
+      summary: Delete an existing portfolio
+      operationId: deletePortfolio
+      parameters:
+        - name: portfolioId
+          in: path
+          required: true
+          description: Unique identifier of the portfolio to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Portfolio deleted successfully
+        '404':
+          description: Portfolio not found
 
 components:
   schemas:
@@ -88,6 +135,15 @@ components:
           minLength: 1
           maxLength: 255
           example: Retirement
+    UpdatePortfolioRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
 
     PortfolioResponse:
       type: object
@@ -95,6 +151,7 @@ components:
         - id
         - name
         - createdAt
+        - updatedAt
       properties:
         id:
           type: integer
@@ -107,3 +164,7 @@ components:
           type: string
           format: date-time
           example: '2026-10-22T15:30:00Z'
+        updatedAt:
+          type: string
+          format: date-time
+          example: '2026-10-23T13:00:00Z'

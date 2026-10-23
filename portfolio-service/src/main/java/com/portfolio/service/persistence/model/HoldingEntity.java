@@ -1,5 +1,6 @@
 package com.portfolio.service.persistence.model;
 
+import com.portfolio.service.audit.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import java.util.Objects;
 @Table(name = "holding")
 @Getter
 @NoArgsConstructor
-public class HoldingEntity {
+public class HoldingEntity extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

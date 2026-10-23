@@ -1,7 +1,11 @@
 CREATE TABLE app_user (
     id BIGSERIAL PRIMARY KEY,
     external_auth_id VARCHAR(255) NOT NULL UNIQUE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    last_modified_by VARCHAR(255)
+
 );
 
 CREATE TABLE portfolio (
@@ -9,6 +13,9 @@ CREATE TABLE portfolio (
     owner_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    last_modified_by VARCHAR(255),
     CONSTRAINT fk_portfolio_owner
         FOREIGN KEY (owner_id)
         REFERENCES app_user(id)
@@ -21,6 +28,10 @@ CREATE TABLE holding (
     quantity NUMERIC(20, 8) NOT NULL,
     average_cost NUMERIC(19, 4) NOT NULL,
     version BIGINT NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    last_modified_by VARCHAR(255),
     CONSTRAINT fk_holding_portfolio
         FOREIGN KEY (portfolio_id)
         REFERENCES portfolio(id),
@@ -35,6 +46,10 @@ CREATE TABLE stock_transaction (
     quantity NUMERIC(20, 8) NOT NULL,
     price_per_share NUMERIC(19, 4) NOT NULL,
     executed_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    last_modified_by VARCHAR(255),
     CONSTRAINT fk_stock_transaction_holding
         FOREIGN KEY (holding_id)
         REFERENCES holding(id),

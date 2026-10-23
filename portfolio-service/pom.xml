@@ -146,6 +146,9 @@
                             <generateModelTests>false</generateModelTests>
                             <generateApiDocumentation>false</generateApiDocumentation>
                             <generateModelDocumentation>false</generateModelDocumentation>
+                            <globalProperties>
+                                <supportingFiles>ApiUtil.java</supportingFiles>
+                            </globalProperties>
                         </configuration>
                     </execution>
                 </executions>

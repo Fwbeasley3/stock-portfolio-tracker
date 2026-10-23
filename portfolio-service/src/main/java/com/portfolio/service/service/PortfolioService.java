@@ -41,4 +41,22 @@ public class PortfolioService {
 
         return portfolioRepository.findByUserEntity_Id(userId);
     }
+
+    @Transactional
+    public PortfolioEntity updatePortfolio (Long portfolioId, Long userId, String portfolioName) {
+
+        PortfolioEntity portfolioEntity = getPortfolio(portfolioId, userId);
+
+        portfolioEntity.setName(portfolioName);
+
+        return portfolioEntity;
+    }
+
+    @Transactional
+    public void deletePortfolio (Long portfolioId, Long userId) {
+
+        PortfolioEntity portfolioEntity = getPortfolio(portfolioId, userId);
+
+        portfolioRepository.delete(portfolioEntity);
+    }
 }

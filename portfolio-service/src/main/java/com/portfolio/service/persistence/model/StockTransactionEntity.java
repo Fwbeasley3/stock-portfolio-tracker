@@ -1,5 +1,6 @@
 package com.portfolio.service.persistence.model;
 
+import com.portfolio.service.audit.AuditableEntity;
 import com.portfolio.service.domain.model.TransactionType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -13,7 +14,7 @@ import java.util.Objects;
 @Table(name = "stock_transaction")
 @Getter
 @NoArgsConstructor
-public class StockTransactionEntity {
+public class StockTransactionEntity extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
