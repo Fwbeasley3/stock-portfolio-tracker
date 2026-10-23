@@ -16,4 +16,15 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .build();
     }
+
+    @ExceptionHandler(HoldingAlreadyExistsException.class)
+    public ResponseEntity<Void> handleHoldingAlreadyExists(
+            HoldingAlreadyExistsException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .build();
+    }
+
+
 }

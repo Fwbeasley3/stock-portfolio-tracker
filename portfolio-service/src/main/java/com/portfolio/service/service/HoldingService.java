@@ -1,0 +1,39 @@
+package com.portfolio.service.service;
+
+import com.portfolio.service.exception.HoldingAlreadyExistsException;
+import com.portfolio.service.persistence.model.HoldingEntity;
+import com.portfolio.service.persistence.model.PortfolioEntity;
+import com.portfolio.service.persistence.model.repository.HoldingRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Locale;
+
+@Service
+@RequiredArgsConstructor
+public class HoldingService {
+
+    private final HoldingRepository holdingRepository;
+    private final PortfolioService portfolioService;
+
+    @Transactional
+    public HoldingEntity createHolding(Long portfolioId, Long userId, String symbol, BigDecimal quantity, BigDecimal averageCost) {
+
+        // Check if portfolio exists
+        PortfolioEntity portfolioEntity = portfolioService.getPortfolio(portfolioId, userId);
+
+        String symbolUpperCase = symbol.trim().toUpperCase(Locale.ROOT);
+        // Check the holding doesn't already exist in the portfolio
+        boolean exists = holdingRepository.existsByPortfolioEntity_IdAndSymbol(portfolioId, symbolUpperCase);
+
+       if (exists) {
+           throw new HoldingAlreadyExistsException("Holding Already exists");
+       }
+
+       HoldingEntity holdingEntity = new HoldingEntity(portfolioEntity,symbolUpperCase, quantity,averageCost);
+
+       return holdingRepository.save(holdingEntity);
+    }
+}
