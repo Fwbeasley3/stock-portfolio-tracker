@@ -237,7 +237,31 @@ paths:
 
         '404':
           description: Portfolio not found
-
+  /portfolios/{portfolioId}/valuation:
+    get:
+      tags:
+        - Portfolios
+      summary: Retrieve the current valuation of a portfolio by ID
+      operationId: getPortfolioValuation
+      parameters:
+        - name: portfolioId
+          in: path
+          required: true
+          description: Unique identifier of the portfolio
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Portfolio valuation calculated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioValuationResponse'
+        '404':
+          description: Portfolio not found
+        '503':
+          description: Market Data Service Unavailable
 components:
   schemas:
     CreatePortfolioRequest:
@@ -374,3 +398,38 @@ components:
         executedAt:
           type: string
           format: date-time
+    HoldingValuationResponse:
+      type: object
+      required:
+        - symbol
+        - quantity
+        - currentPrice
+        - marketValue
+      properties:
+        symbol:
+          $ref: '#/components/schemas/Symbol'
+        quantity:
+          $ref: '#/components/schemas/HoldingQuantity'
+        currentPrice:
+          type: number
+          description: Current market price per share
+        marketValue:
+          type: number
+          description: Quantity multiplied by current market price
+    PortfolioValuationResponse:
+      type: object
+      required:
+        - portfolioId
+        - totalMarketValue
+        - holdings
+      properties:
+        portfolioId:
+          type: integer
+          format: int64
+        totalMarketValue:
+          type: number
+          description: Sum of all holding market values
+        holdings:
+          type: array
+          items:
+            $ref: '#/components/schemas/HoldingValuationResponse'

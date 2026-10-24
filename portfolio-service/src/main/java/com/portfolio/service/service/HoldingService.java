@@ -44,7 +44,10 @@ public class HoldingService {
   }
 
   @Transactional(readOnly = true)
-  public HoldingEntity getHolding(Long portfolioId, Long holdingId) {
+  public HoldingEntity getHolding(Long portfolioId, Long holdingId, Long userId) {
+
+    // Check if portfolio exists
+    portfolioService.getPortfolio(portfolioId, userId);
 
     return holdingRepository
         .findByPortfolioEntity_IdAndId(portfolioId, holdingId)
@@ -52,7 +55,10 @@ public class HoldingService {
   }
 
   @Transactional(readOnly = true)
-  public List<HoldingEntity> getHoldings(Long portfolioId) {
+  public List<HoldingEntity> getHoldings(Long portfolioId, Long userId) {
+
+    // Check if portfolio exists
+    portfolioService.getPortfolio(portfolioId, userId);
 
     return holdingRepository.findByPortfolioEntity_Id(portfolioId);
   }

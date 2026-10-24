@@ -4,7 +4,9 @@ import com.portfolio.service.api.HoldingsApiDelegate;
 import com.portfolio.service.api.model.HoldingResponse;
 import com.portfolio.service.mapper.HoldingMapper;
 import com.portfolio.service.persistence.model.HoldingEntity;
+import com.portfolio.service.persistence.model.UserEntity;
 import com.portfolio.service.service.HoldingService;
+import com.portfolio.service.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,17 @@ import java.util.List;
 public class HoldingApiDelegateImpl implements HoldingsApiDelegate {
 
   private final HoldingService holdingService;
+  private final UserService userService;
 
   @Override
   public ResponseEntity<HoldingResponse> getHolding(Long portfolioId, Long holdingId) {
 
-    HoldingEntity holdingEntity = holdingService.getHolding(portfolioId, holdingId);
+    // TODO Replace development identity with authenticated JWT subject
+    String testExternalAuthId = "dev-user-123";
+
+    UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
+
+    HoldingEntity holdingEntity = holdingService.getHolding(portfolioId, holdingId, userEntity.getId());
 
     HoldingResponse holdingResponse = HoldingMapper.mapToResponse(holdingEntity);
     return ResponseEntity.ok(holdingResponse);
@@ -29,7 +37,11 @@ public class HoldingApiDelegateImpl implements HoldingsApiDelegate {
   @Override
   public ResponseEntity<List<HoldingResponse>> getHoldings(Long portfolioId) {
 
-    List<HoldingEntity> holdingEntityList = holdingService.getHoldings(portfolioId);
+    // TODO Replace development identity with authenticated JWT subject
+    String testExternalAuthId = "dev-user-123";
+
+    UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
+    List<HoldingEntity> holdingEntityList = holdingService.getHoldings(portfolioId, userEntity.getId());
 
     List<HoldingResponse> holdingResponseList =
         holdingEntityList.stream().map(HoldingMapper::mapToResponse).toList();
