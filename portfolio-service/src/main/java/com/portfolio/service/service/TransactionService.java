@@ -45,20 +45,15 @@ public class TransactionService {
     Optional<HoldingEntity> holdingEntityOpt =
         holdingService.findHoldingBySymbol(portfolioId, symbolUpperCase);
 
-    HoldingEntity holdingEntity;
+    HoldingEntity holdingEntity =
+            switch (type) {
+                case BUY ->
 
-    if (type == TransactionType.BUY) {
-
-      holdingEntity =
           processBuyTransaction(
               holdingEntityOpt, portfolioId, userId, symbolUpperCase, quantity, pricePerShare);
 
-    } else if (type == TransactionType.SELL) {
-
-      holdingEntity = processSellTransaction(holdingEntityOpt, quantity);
-    } else {
-      throw new IllegalArgumentException("Invalid transaction type");
-    }
+                case SELL -> processSellTransaction(holdingEntityOpt, quantity);
+                };
 
     TransactionEntity transactionEntity =
         new TransactionEntity(holdingEntity, type, quantity, pricePerShare);
