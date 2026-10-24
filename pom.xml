@@ -49,6 +49,9 @@
                 <configuration>
                     <effort>Max</effort>
                     <threshold>Medium</threshold>
+                    <excludeFilterFile>
+                        ${maven.multiModuleProjectDirectory}/spotbugs/spotbugs-exclude.xml
+                    </excludeFilterFile>
                 </configuration>
             </plugin>
         </plugins>

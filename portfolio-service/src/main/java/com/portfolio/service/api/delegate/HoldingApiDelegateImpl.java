@@ -1,20 +1,14 @@
 package com.portfolio.service.api.delegate;
 
 import com.portfolio.service.api.HoldingsApiDelegate;
-import com.portfolio.service.api.model.CreateHoldingRequest;
 import com.portfolio.service.api.model.HoldingResponse;
 import com.portfolio.service.mapper.HoldingMapper;
 import com.portfolio.service.persistence.model.HoldingEntity;
-import com.portfolio.service.persistence.model.UserEntity;
 import com.portfolio.service.service.HoldingService;
-import com.portfolio.service.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.math.BigDecimal;
-import java.net.URI;
 import java.util.List;
 
 @AllArgsConstructor
