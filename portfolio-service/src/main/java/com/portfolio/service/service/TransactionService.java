@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -52,6 +53,15 @@ public class TransactionService {
 
         TransactionEntity transactionEntity = new TransactionEntity(holdingEntity, type, quantity, pricePerShare);
         return transactionRepository.save(transactionEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TransactionEntity> getTransactions(Long portfolioId, Long userId) {
+
+        // Validate portfolio belongs to the user
+        portfolioService.getPortfolio(portfolioId, userId);
+
+        return transactionRepository.findByHoldingEntity_PortfolioEntity_IdOrderByExecutedAtDesc(portfolioId);
     }
 
     private void validateTransaction(

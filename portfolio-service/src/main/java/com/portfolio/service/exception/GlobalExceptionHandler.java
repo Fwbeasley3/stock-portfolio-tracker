@@ -17,14 +17,16 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler(HoldingAlreadyExistsException.class)
-    public ResponseEntity<Void> handleHoldingAlreadyExists(
-            HoldingAlreadyExistsException ex) {
+    @ExceptionHandler({HoldingAlreadyExistsException.class, InsufficientSharesException.class})
+    public ResponseEntity<Void> handleConflict(
+            RuntimeException ex) {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .build();
     }
+
+
 
 
 }

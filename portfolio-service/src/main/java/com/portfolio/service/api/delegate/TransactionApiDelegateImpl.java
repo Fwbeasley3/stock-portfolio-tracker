@@ -17,6 +17,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -42,5 +43,19 @@ public class TransactionApiDelegateImpl implements TransactionsApiDelegate {
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(transactionResponse);
+    }
+
+    @Override
+    public ResponseEntity<List<TransactionResponse>> getTransactions(Long portfolioId) {
+
+        // TODO Replace development identity with authenticated JWT subject
+        String testExternalAuthId = "dev-user-123";
+        UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
+
+        List<TransactionEntity> transactionEntityList = transactionService.getTransactions(portfolioId, userEntity.getId());
+
+        List<TransactionResponse> responseEntityList = transactionEntityList.stream().map(TransactionMapper::mapToResponse).toList();
+
+        return ResponseEntity.ok(responseEntityList);
     }
 }

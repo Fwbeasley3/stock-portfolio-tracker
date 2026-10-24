@@ -210,6 +210,33 @@ paths:
           description: Portfolio not found
         '409':
           description: Transaction SELL may not exceed available shares
+    get:
+      tags:
+        - Transactions
+      summary: Get portfolio transaction history
+      operationId: getTransactions
+      parameters:
+        - name: portfolioId
+          in: path
+          required: true
+          description: ID of the portfolio
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Transaction history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TransactionResponse'
+        '400':
+          description: Invalid request
+
+        '404':
+          description: Portfolio not found
 
 components:
   schemas:
