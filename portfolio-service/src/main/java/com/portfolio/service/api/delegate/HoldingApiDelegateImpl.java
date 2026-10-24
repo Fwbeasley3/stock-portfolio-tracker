@@ -15,6 +15,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.List;
 
 @AllArgsConstructor
 @Service
@@ -41,5 +42,24 @@ public class HoldingApiDelegateImpl implements HoldingsApiDelegate {
         HoldingResponse holdingResponse = HoldingMapper.mapToResponse(holdingEntity);
 
         return ResponseEntity.created(location).body(holdingResponse);
+    }
+
+    @Override
+    public ResponseEntity<HoldingResponse> getHolding(Long portfolioId, Long holdingId) {
+
+        HoldingEntity holdingEntity = holdingService.getHolding(portfolioId, holdingId);
+
+        HoldingResponse holdingResponse = HoldingMapper.mapToResponse(holdingEntity);
+        return ResponseEntity.ok(holdingResponse);
+    }
+
+    @Override
+    public ResponseEntity<List<HoldingResponse>> getHoldings(Long portfolioId) {
+
+        List<HoldingEntity> holdingEntityList = holdingService.getHoldings(portfolioId);
+
+        List<HoldingResponse> holdingResponseList = holdingEntityList.stream().map(HoldingMapper::mapToResponse).toList();
+
+        return ResponseEntity.ok(holdingResponseList);
     }
 }

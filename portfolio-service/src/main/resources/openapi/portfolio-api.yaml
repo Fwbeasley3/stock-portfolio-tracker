@@ -162,6 +162,60 @@ paths:
           description: Portfolio not found
         '409':
           description: Holding with this symbol already exists in the portfolio
+    get:
+      tags:
+        - Holdings
+      summary: Retrieve all holdings for the authenticated user and portfolio ID
+      parameters:
+        - name: portfolioId
+          in: path
+          required: true
+          description: ID of the portfolio receiving the holding
+          schema:
+            type: integer
+            format: int64
+      operationId: getHoldings
+      responses:
+        '200':
+          description: Holdings retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HoldingResponse'
+        '404':
+          description: Portfolio not found
+  /portfolios/{portfolioId}/holdings/{holdingId}:
+    get:
+      tags:
+        - Holdings
+      summary: Retrieve a holding by ID
+      operationId: getHolding
+      parameters:
+        - name: portfolioId
+          in: path
+          required: true
+          description: Unique identifier of the portfolio
+          schema:
+            type: integer
+            format: int64
+        - name: holdingId
+          in: path
+          required: true
+          description: Unique identifier of a holding
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Holding retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HoldingResponse'
+        '404':
+          description: Holding or Portfolio not found
 
 components:
   schemas:

@@ -12,5 +12,7 @@ public interface HoldingRepository extends JpaRepository<HoldingEntity, Long> {
 
     Optional<HoldingEntity> findByPortfolioEntity_IdAndSymbol(Long portfolioId, String symbol);
 
+    Optional<HoldingEntity> findByPortfolioEntity_IdAndId(Long portfolioId, Long holdingId);
+
     boolean existsByPortfolioEntity_IdAndSymbol(Long portfolioId, String symbol);
 }
