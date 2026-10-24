@@ -11,4 +11,19 @@
 
     <artifactId>market-data-service</artifactId>
 
+    <dependencies>
+        <!-- Shared protobuf messages and gRPC service definitions -->
+        <dependency>
+            <groupId>com.portfolio</groupId>
+            <artifactId>portfolio-contracts</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!-- gRPC server transport -->
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty-shaded</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option java_package = "com.portfolio.contracts.marketdata";
+option java_multiple_files = true;
+
+package marketdata;
+
+service MarketDataService {
+  // A simple unary RPC
+  // Portfolio service sends one request
+  // Market Data Service processes the request
+  // Market Data service returns one response
+
+  // Retrieves a simulated stock price
+  rpc GetStockPrice(GetStockPriceRequest) returns (GetStockPriceResponse) {}
+
+}
+
+  message GetStockPriceRequest {
+    string symbol = 1;
+  }
+
+  message GetStockPriceResponse {
+    string symbol = 1;
+    string price = 2;
+    // Timestamp when the stock price was generated.
+    // Unix epoch time in milliseconds (UTC).
+    int64 as_of = 3;
+  }
+
+
