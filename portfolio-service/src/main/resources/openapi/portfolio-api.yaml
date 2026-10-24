@@ -123,45 +123,6 @@ paths:
         '404':
           description: Portfolio not found
   /portfolios/{portfolioId}/holdings:
-    post:
-      tags:
-        - Holdings
-      summary: Add a holding to an existing portfolio
-      operationId: createHolding
-      parameters:
-        - name: portfolioId
-          in: path
-          required: true
-          description: ID of the portfolio receiving the holding
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateHoldingRequest'
-      responses:
-        '201':
-          description: Holding created successfully
-          headers:
-            Location:
-              description: URI of the newly created holding
-              required: true
-              schema:
-                type: string
-                format: uri-reference
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/HoldingResponse'
-        '400':
-          description: Invalid holding request
-        '404':
-          description: Portfolio not found
-        '409':
-          description: Holding with this symbol already exists in the portfolio
     get:
       tags:
         - Holdings
@@ -216,6 +177,46 @@ paths:
                 $ref: '#/components/schemas/HoldingResponse'
         '404':
           description: Holding or Portfolio not found
+  /portfolios/{portfolioId}/transactions:
+    post:
+      tags:
+        - Transactions
+      summary: Create a Transaction
+      operationId: createTransaction
+      parameters:
+        - name: portfolioId
+          in: path
+          required: true
+          description: ID of the portfolio the transaction belongs to
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTransactionRequest'
+      responses:
+        '201':
+          description: Transaction created successfully
+          headers:
+            Location:
+              description: URI of the newly created transaction
+              required: true
+              schema:
+                type: string
+                format: uri-reference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+        '400':
+          description: Invalid transaction request
+        '404':
+          description: Portfolio not found
+        '409':
+          description: Transaction SELL may not exceed available shares
 
 components:
   schemas:
@@ -225,19 +226,14 @@ components:
         - name
       properties:
         name:
-          type: string
-          minLength: 1
-          maxLength: 255
-          example: Retirement
+          $ref: '#/components/schemas/Name'
     UpdatePortfolioRequest:
       type: object
       required:
         - name
       properties:
         name:
-          type: string
-          minLength: 1
-          maxLength: 255
+          $ref: '#/components/schemas/Name'
     PortfolioResponse:
       type: object
       required:
@@ -251,8 +247,7 @@ components:
           format: int64
           example: 1
         name:
-          type: string
-          example: Retirement
+          $ref: '#/components/schemas/Name'
         createdAt:
           type: string
           format: date-time
@@ -261,28 +256,39 @@ components:
           type: string
           format: date-time
           example: '2026-10-23T13:00:00Z'
-    CreateHoldingRequest:
-      type: object
-      required:
-        - symbol
-        - quantity
-        - averageCost
-      properties:
-        symbol:
-          type: string
-          minLength: 1
-          maxLength: 255
-          pattern: '^[A-Za-z][A-Za-z0-9.-]*$'
-          example: AAPL
-        quantity:
-          type: number
-          minimum: 0
-          exclusiveMinimum: true
-          example: 10
-        averageCost:
-          type: number
-          minimum: 0
-          example: 185.50
+    Name:
+      type: string
+      minLength: 1
+      maxLength: 255
+    Symbol:
+      type: string
+      minLength: 1
+      maxLength: 255
+      pattern: '^[A-Za-z][A-Za-z0-9.-]*$'
+      example: AAPL
+    HoldingQuantity:
+      type: number
+      minimum: 0
+      example: 10
+    TransactionQuantity:
+      type: number
+      minimum: 0
+      exclusiveMinimum: true
+      example: 10
+    AverageCost:
+      type: number
+      minimum: 0
+      example: 185.50
+    Type:
+      type: string
+      enum:
+        - BUY
+        - SELL
+    PricePerShare:
+      type: number
+      minimum: 0
+      exclusiveMinimum: true
+      example: 185.50
     HoldingResponse:
       type: object
       required:
@@ -297,17 +303,54 @@ components:
           type: integer
           format: int64
         symbol:
-          type: string
-          example: AAPL
+          $ref: '#/components/schemas/Symbol'
         quantity:
-          type: number
-          example: 10
+          $ref: '#/components/schemas/HoldingQuantity'
         averageCost:
-          type: number
-          example: 185.50
+          $ref: '#/components/schemas/AverageCost'
         createdAt:
           type: string
           format: date-time
         updatedAt:
+          type: string
+          format: date-time
+    CreateTransactionRequest:
+      type: object
+      required:
+        - symbol
+        - type
+        - quantity
+        - pricePerShare
+      properties:
+        symbol:
+          $ref: '#/components/schemas/Symbol'
+        type:
+          $ref: '#/components/schemas/Type'
+        quantity:
+          $ref: '#/components/schemas/TransactionQuantity'
+        pricePerShare:
+          $ref: '#/components/schemas/PricePerShare'
+    TransactionResponse:
+      type: object
+      required:
+        - id
+        - symbol
+        - type
+        - quantity
+        - pricePerShare
+        - executedAt
+      properties:
+        id:
+          type: integer
+          format: int64
+        symbol:
+          $ref: '#/components/schemas/Symbol'
+        type:
+          $ref: '#/components/schemas/Type'
+        quantity:
+          $ref: '#/components/schemas/TransactionQuantity'
+        pricePerShare:
+          $ref: '#/components/schemas/PricePerShare'
+        executedAt:
           type: string
           format: date-time
