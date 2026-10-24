@@ -14,7 +14,7 @@ import java.util.Objects;
 @Table(name = "stock_transaction")
 @Getter
 @NoArgsConstructor
-public class StockTransactionEntity extends AuditableEntity {
+public class TransactionEntity extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +37,7 @@ public class StockTransactionEntity extends AuditableEntity {
     @Column(name = "executed_at", nullable = false)
     private Instant executedAt;
 
-    public StockTransactionEntity(HoldingEntity holdingEntity, TransactionType transactionType, BigDecimal quantity, BigDecimal pricePerShare) {
+    public TransactionEntity(HoldingEntity holdingEntity, TransactionType transactionType, BigDecimal quantity, BigDecimal pricePerShare) {
         this.holdingEntity = Objects.requireNonNull(holdingEntity, "Holding must not be null");
         this.transactionType = Objects.requireNonNull(transactionType, "Transaction type must not be null");
         this.quantity = Objects.requireNonNull(quantity, "Quantity must not be null");

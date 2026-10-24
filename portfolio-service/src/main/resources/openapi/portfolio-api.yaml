@@ -200,13 +200,6 @@ paths:
       responses:
         '201':
           description: Transaction created successfully
-          headers:
-            Location:
-              description: URI of the newly created transaction
-              required: true
-              schema:
-                type: string
-                format: uri-reference
           content:
             application/json:
               schema:

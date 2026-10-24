@@ -4,6 +4,7 @@ import com.portfolio.service.audit.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -25,9 +26,11 @@ public class HoldingEntity extends AuditableEntity {
     @Column(name = "symbol", nullable = false)
     private String symbol;
 
+    @Setter
     @Column(name = "quantity", nullable = false, precision = 20, scale = 8)
     private BigDecimal quantity;
 
+    @Setter
     @Column(name = "average_cost", nullable = false, precision = 19, scale = 4)
     private BigDecimal averageCost;
 

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,5 +50,11 @@ public class HoldingService {
     public List<HoldingEntity> getHoldings (Long portfolioId) {
 
         return holdingRepository.findByPortfolioEntity_Id(portfolioId);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<HoldingEntity> findHoldingBySymbol (Long portfolioId, String symbol) {
+
+        return holdingRepository.findByPortfolioEntity_IdAndSymbol(portfolioId, symbol);
     }
 }
