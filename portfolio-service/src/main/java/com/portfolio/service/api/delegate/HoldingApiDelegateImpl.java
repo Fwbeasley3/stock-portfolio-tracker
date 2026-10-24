@@ -21,24 +21,25 @@ import java.util.List;
 @Service
 public class HoldingApiDelegateImpl implements HoldingsApiDelegate {
 
-    private final HoldingService holdingService;
+  private final HoldingService holdingService;
 
-    @Override
-    public ResponseEntity<HoldingResponse> getHolding(Long portfolioId, Long holdingId) {
+  @Override
+  public ResponseEntity<HoldingResponse> getHolding(Long portfolioId, Long holdingId) {
 
-        HoldingEntity holdingEntity = holdingService.getHolding(portfolioId, holdingId);
+    HoldingEntity holdingEntity = holdingService.getHolding(portfolioId, holdingId);
 
-        HoldingResponse holdingResponse = HoldingMapper.mapToResponse(holdingEntity);
-        return ResponseEntity.ok(holdingResponse);
-    }
+    HoldingResponse holdingResponse = HoldingMapper.mapToResponse(holdingEntity);
+    return ResponseEntity.ok(holdingResponse);
+  }
 
-    @Override
-    public ResponseEntity<List<HoldingResponse>> getHoldings(Long portfolioId) {
+  @Override
+  public ResponseEntity<List<HoldingResponse>> getHoldings(Long portfolioId) {
 
-        List<HoldingEntity> holdingEntityList = holdingService.getHoldings(portfolioId);
+    List<HoldingEntity> holdingEntityList = holdingService.getHoldings(portfolioId);
 
-        List<HoldingResponse> holdingResponseList = holdingEntityList.stream().map(HoldingMapper::mapToResponse).toList();
+    List<HoldingResponse> holdingResponseList =
+        holdingEntityList.stream().map(HoldingMapper::mapToResponse).toList();
 
-        return ResponseEntity.ok(holdingResponseList);
-    }
+    return ResponseEntity.ok(holdingResponseList);
+  }
 }

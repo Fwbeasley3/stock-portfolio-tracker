@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<TransactionEntity, Long> {
 
-    @EntityGraph(attributePaths = "holdingEntity")
-    List<TransactionEntity> findByHoldingEntity_PortfolioEntity_IdOrderByExecutedAtDesc(Long portfolioId);
+  @EntityGraph(attributePaths = "holdingEntity")
+  List<TransactionEntity> findByHoldingEntity_PortfolioEntity_IdOrderByExecutedAtDesc(
+      Long portfolioId);
 }

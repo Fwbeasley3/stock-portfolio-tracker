@@ -32,12 +32,15 @@ class PortfolioSpec extends Specification {
         registry.add("spring.datasource.password", postgres::getPassword)
     }
 
-    @Autowired UserRepository userRepository
-    @Autowired PortfolioRepository portfolioRepository
-    @Autowired EntityManager entityManager
+    @Autowired
+    UserRepository userRepository
+    @Autowired
+    PortfolioRepository portfolioRepository
+    @Autowired
+    EntityManager entityManager
 
 
-    def"Find a portfolio that belongs to the correct user"() {
+    def "Find a portfolio that belongs to the correct user"() {
         given: "There is a portfolio persisted in the database for a user"
 
         String externalAuthId1 = "dummyId123"
@@ -59,14 +62,14 @@ class PortfolioSpec extends Specification {
         Optional<PortfolioEntity> retrievedPortfolio =
                 portfolioRepository.findByIdAndUserEntity_Id(savedPortfolio.id, userEntityOwner.id)
 
-        then:"Verify the portfolio was persisted with correct values"
+        then: "Verify the portfolio was persisted with correct values"
         savedPortfolio.id != null
         retrievedPortfolio.isPresent()
         retrievedPortfolio.get().userEntity.id == userEntityOwner.id
         retrievedPortfolio.get().name == portfolioName
     }
 
-    def"Find a portfolio that belongs to the wrong user and returns empty"() {
+    def "Find a portfolio that belongs to the wrong user and returns empty"() {
         given: "There is a portfolio persisted in the database for a user"
 
         String externalAuthId1 = "dummyId123"
@@ -90,12 +93,12 @@ class PortfolioSpec extends Specification {
         Optional<PortfolioEntity> retrievedPortfolio =
                 portfolioRepository.findByIdAndUserEntity_Id(savedPortfolio.id, userEntityNonOwner.id)
 
-        then:"Verify the result is empty"
+        then: "Verify the result is empty"
         savedPortfolio.id != null
         retrievedPortfolio.isEmpty()
     }
 
-    def"Find all portfolio that belongs to the correct user"() {
+    def "Find all portfolio that belongs to the correct user"() {
         given: "There are portfolios persisted in the database for a user"
 
         String externalAuthId1 = "dummyId123"
@@ -131,13 +134,13 @@ class PortfolioSpec extends Specification {
         List<PortfolioEntity> retrievedPortfolios =
                 portfolioRepository.findByUserEntity_Id(userEntityOwner.id)
 
-        then:"Verify that all portfolios were retrieved for the user"
+        then: "Verify that all portfolios were retrieved for the user"
         savedPortfolio1.id != null
         savedPortfolio2.id != null
         savedPortfolio3.id != null
         savedPortfolio4.id != null
         retrievedPortfolios.size() == 3
         retrievedPortfolios*.name as Set == [portfolioName1, portfolioName2, portfolioName3] as Set
-        retrievedPortfolios.every {it .userEntity.id == userEntityOwner.id}
+        retrievedPortfolios.every { it.userEntity.id == userEntityOwner.id }
     }
 }

@@ -24,7 +24,7 @@ class PortfolioServiceSpec extends Specification {
 
         then: "Verify our interactions and that the portfolio was created with the correct user"
         1 * userService.findOrCreateUser(externalAuthId) >> userEntity
-        1 * portfolioRepository.save({it.name == portfolioName && it.userEntity == userEntity}) >> {PortfolioEntity portfolio -> portfolio}
+        1 * portfolioRepository.save({ it.name == portfolioName && it.userEntity == userEntity }) >> { PortfolioEntity portfolio -> portfolio }
         result.name == portfolioName
         result.userEntity == userEntity
     }
@@ -93,7 +93,7 @@ class PortfolioServiceSpec extends Specification {
         result*.name as Set == [portfolioName1, portfolioName2, portfolioName3] as Set
 
         and: "Every portfolio belongs to the user"
-        result.every() {it.userEntity.id == userEntity.id}
+        result.every() { it.userEntity.id == userEntity.id }
     }
 
     def "Retrieve all portfolios for a user returns empty list"() {
@@ -109,7 +109,7 @@ class PortfolioServiceSpec extends Specification {
 
         then: "The repository returns an empty list"
         1 * portfolioRepository.findByUserEntity_Id(userEntity.id) >> []
-        and :"The service returns an empty list"
+        and: "The service returns an empty list"
         result.isEmpty()
     }
 }

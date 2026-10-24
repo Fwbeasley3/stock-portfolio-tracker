@@ -17,83 +17,92 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
-
 @AllArgsConstructor
 @Service
 public class PortfoliosApiDelegateImpl implements PortfoliosApiDelegate {
 
-    private final PortfolioService portfolioService;
-    private final UserService userService;
+  private final PortfolioService portfolioService;
+  private final UserService userService;
 
-    @Override
-    public ResponseEntity<PortfolioResponse> createPortfolio(CreatePortfolioRequest createPortfolioRequest) {
+  @Override
+  public ResponseEntity<PortfolioResponse> createPortfolio(
+      CreatePortfolioRequest createPortfolioRequest) {
 
-        // TODO Replace development identity with authenticated JWT subject
-        String testExternalAuthId = "dev-user-123";
-        String portfolioName = createPortfolioRequest.getName();
+    // TODO Replace development identity with authenticated JWT subject
+    String testExternalAuthId = "dev-user-123";
+    String portfolioName = createPortfolioRequest.getName();
 
-        PortfolioEntity portfolioEntity = portfolioService.createPortfolio(testExternalAuthId, portfolioName);
+    PortfolioEntity portfolioEntity =
+        portfolioService.createPortfolio(testExternalAuthId, portfolioName);
 
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(portfolioEntity.getId()).toUri();
+    URI location =
+        ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(portfolioEntity.getId())
+            .toUri();
 
-        PortfolioResponse portfolioResponse = PortfolioMapper.mapToResponse(portfolioEntity);
+    PortfolioResponse portfolioResponse = PortfolioMapper.mapToResponse(portfolioEntity);
 
-        return ResponseEntity.created(location).body(portfolioResponse);
-    }
+    return ResponseEntity.created(location).body(portfolioResponse);
+  }
 
-    @Override
-    public ResponseEntity<PortfolioResponse> getPortfolio(Long portfolioId) {
+  @Override
+  public ResponseEntity<PortfolioResponse> getPortfolio(Long portfolioId) {
 
-        // TODO Replace development identity with authenticated JWT subject
-        String testExternalAuthId = "dev-user-123";
+    // TODO Replace development identity with authenticated JWT subject
+    String testExternalAuthId = "dev-user-123";
 
-        UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
-        PortfolioEntity portfolioEntity = portfolioService.getPortfolio(portfolioId,userEntity.getId());
+    UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
+    PortfolioEntity portfolioEntity =
+        portfolioService.getPortfolio(portfolioId, userEntity.getId());
 
-        PortfolioResponse portfolioResponse = PortfolioMapper.mapToResponse(portfolioEntity);
+    PortfolioResponse portfolioResponse = PortfolioMapper.mapToResponse(portfolioEntity);
 
-        return ResponseEntity.ok(portfolioResponse);
-    }
+    return ResponseEntity.ok(portfolioResponse);
+  }
 
-    @Override
-    public ResponseEntity<List<PortfolioResponse>> getPortfolios() {
+  @Override
+  public ResponseEntity<List<PortfolioResponse>> getPortfolios() {
 
-        // TODO Replace development identity with authenticated JWT subject
-        String testExternalAuthId = "dev-user-123";
+    // TODO Replace development identity with authenticated JWT subject
+    String testExternalAuthId = "dev-user-123";
 
-        UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
-        List<PortfolioEntity> portfolioEntityList = portfolioService.getPortfolios(userEntity.getId());
+    UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
+    List<PortfolioEntity> portfolioEntityList = portfolioService.getPortfolios(userEntity.getId());
 
-        List<PortfolioResponse> portfolioResponseList = portfolioEntityList.stream().map(PortfolioMapper::mapToResponse).toList();
+    List<PortfolioResponse> portfolioResponseList =
+        portfolioEntityList.stream().map(PortfolioMapper::mapToResponse).toList();
 
-        return ResponseEntity.ok(portfolioResponseList);
-    }
+    return ResponseEntity.ok(portfolioResponseList);
+  }
 
-    @Override
-    public ResponseEntity<PortfolioResponse> updatePortfolio(Long portfolioId, UpdatePortfolioRequest updatePortfolioRequest) {
+  @Override
+  public ResponseEntity<PortfolioResponse> updatePortfolio(
+      Long portfolioId, UpdatePortfolioRequest updatePortfolioRequest) {
 
-        // TODO Replace development identity with authenticated JWT subject
-        String testExternalAuthId = "dev-user-123";
-        String portfolioNameForUpdate = updatePortfolioRequest.getName();
+    // TODO Replace development identity with authenticated JWT subject
+    String testExternalAuthId = "dev-user-123";
+    String portfolioNameForUpdate = updatePortfolioRequest.getName();
 
-        UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
-        PortfolioEntity portfolioEntity = portfolioService.updatePortfolio(portfolioId,userEntity.getId(), portfolioNameForUpdate);
+    UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
+    PortfolioEntity portfolioEntity =
+        portfolioService.updatePortfolio(portfolioId, userEntity.getId(), portfolioNameForUpdate);
 
-        PortfolioResponse portfolioResponse = PortfolioMapper.mapToResponse(portfolioEntity);
+    PortfolioResponse portfolioResponse = PortfolioMapper.mapToResponse(portfolioEntity);
 
-        return ResponseEntity.ok(portfolioResponse);
-    }
+    return ResponseEntity.ok(portfolioResponse);
+  }
 
-    @Override
-    public ResponseEntity<Void> deletePortfolio(Long portfolioId) {
+  @Override
+  public ResponseEntity<Void> deletePortfolio(Long portfolioId) {
 
-        // TODO Replace development identity with authenticated JWT subject
-        String testExternalAuthId = "dev-user-123";
+    // TODO Replace development identity with authenticated JWT subject
+    String testExternalAuthId = "dev-user-123";
 
-        UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
+    UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
 
-        portfolioService.deletePortfolio(portfolioId,userEntity.getId());
+    portfolioService.deletePortfolio(portfolioId, userEntity.getId());
 
-        return ResponseEntity.noContent().build();
-    }
+    return ResponseEntity.noContent().build();
+  }
 }

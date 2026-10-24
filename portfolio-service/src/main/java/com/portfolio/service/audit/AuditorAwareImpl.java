@@ -8,8 +8,8 @@ import java.util.Optional;
 @Component("auditorAware")
 public class AuditorAwareImpl implements AuditorAware<String> {
 
-    @Override
-    public Optional<String> getCurrentAuditor() {
-        return Optional.of("dev-user-123");
-    }
+  @Override
+  public Optional<String> getCurrentAuditor() {
+    return Optional.of("dev-user-123");
+  }
 }

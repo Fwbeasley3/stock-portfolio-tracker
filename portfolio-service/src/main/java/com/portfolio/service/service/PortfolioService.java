@@ -14,48 +14,50 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PortfolioService {
 
-    private final PortfolioRepository portfolioRepository;
-    private final UserService userService;
+  private final PortfolioRepository portfolioRepository;
+  private final UserService userService;
 
-    @Transactional()
-    public PortfolioEntity createPortfolio(String externalAuthId, String portfolioName) {
+  @Transactional()
+  public PortfolioEntity createPortfolio(String externalAuthId, String portfolioName) {
 
-        //Retrieve the user that wants to create the portfolio
-        UserEntity userEntity = userService.findOrCreateUser(externalAuthId);
+    // Retrieve the user that wants to create the portfolio
+    UserEntity userEntity = userService.findOrCreateUser(externalAuthId);
 
-        //Create the portfolio
-        PortfolioEntity portfolioEntity = new PortfolioEntity(userEntity, portfolioName);
+    // Create the portfolio
+    PortfolioEntity portfolioEntity = new PortfolioEntity(userEntity, portfolioName);
 
-        return portfolioRepository.save(portfolioEntity);
-    }
+    return portfolioRepository.save(portfolioEntity);
+  }
 
-    @Transactional(readOnly = true)
-    public PortfolioEntity getPortfolio(Long portfolioId, Long userId) {
+  @Transactional(readOnly = true)
+  public PortfolioEntity getPortfolio(Long portfolioId, Long userId) {
 
-        return portfolioRepository.findByIdAndUserEntity_Id(portfolioId, userId).orElseThrow(() -> new PortfolioNotFoundException("Portfolio not found"));
-    }
+    return portfolioRepository
+        .findByIdAndUserEntity_Id(portfolioId, userId)
+        .orElseThrow(() -> new PortfolioNotFoundException("Portfolio not found"));
+  }
 
-    @Transactional(readOnly = true)
-    public List<PortfolioEntity> getPortfolios(Long userId) {
+  @Transactional(readOnly = true)
+  public List<PortfolioEntity> getPortfolios(Long userId) {
 
-        return portfolioRepository.findByUserEntity_Id(userId);
-    }
+    return portfolioRepository.findByUserEntity_Id(userId);
+  }
 
-    @Transactional
-    public PortfolioEntity updatePortfolio (Long portfolioId, Long userId, String portfolioName) {
+  @Transactional
+  public PortfolioEntity updatePortfolio(Long portfolioId, Long userId, String portfolioName) {
 
-        PortfolioEntity portfolioEntity = getPortfolio(portfolioId, userId);
+    PortfolioEntity portfolioEntity = getPortfolio(portfolioId, userId);
 
-        portfolioEntity.setName(portfolioName);
+    portfolioEntity.setName(portfolioName);
 
-        return portfolioEntity;
-    }
+    return portfolioEntity;
+  }
 
-    @Transactional
-    public void deletePortfolio (Long portfolioId, Long userId) {
+  @Transactional
+  public void deletePortfolio(Long portfolioId, Long userId) {
 
-        PortfolioEntity portfolioEntity = getPortfolio(portfolioId, userId);
+    PortfolioEntity portfolioEntity = getPortfolio(portfolioId, userId);
 
-        portfolioRepository.delete(portfolioEntity);
-    }
+    portfolioRepository.delete(portfolioEntity);
+  }
 }

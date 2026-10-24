@@ -8,25 +8,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(PortfolioNotFoundException.class)
-    public ResponseEntity<Void> handlePortfolioNotFound(
-            PortfolioNotFoundException ex) {
+  @ExceptionHandler(PortfolioNotFoundException.class)
+  public ResponseEntity<Void> handlePortfolioNotFound(PortfolioNotFoundException ex) {
 
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .build();
-    }
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+  }
 
-    @ExceptionHandler({HoldingAlreadyExistsException.class, InsufficientSharesException.class})
-    public ResponseEntity<Void> handleConflict(
-            RuntimeException ex) {
+  @ExceptionHandler({HoldingAlreadyExistsException.class, InsufficientSharesException.class})
+  public ResponseEntity<Void> handleConflict(RuntimeException ex) {
 
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .build();
-    }
-
-
-
-
+    return ResponseEntity.status(HttpStatus.CONFLICT).build();
+  }
 }

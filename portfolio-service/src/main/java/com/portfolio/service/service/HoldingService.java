@@ -18,43 +18,48 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class HoldingService {
 
-    private final HoldingRepository holdingRepository;
-    private final PortfolioService portfolioService;
+  private final HoldingRepository holdingRepository;
+  private final PortfolioService portfolioService;
 
-    @Transactional
-    public HoldingEntity createHolding(Long portfolioId, Long userId, String symbol, BigDecimal quantity, BigDecimal averageCost) {
+  @Transactional
+  public HoldingEntity createHolding(
+      Long portfolioId, Long userId, String symbol, BigDecimal quantity, BigDecimal averageCost) {
 
-        // Check if portfolio exists
-        PortfolioEntity portfolioEntity = portfolioService.getPortfolio(portfolioId, userId);
+    // Check if portfolio exists
+    PortfolioEntity portfolioEntity = portfolioService.getPortfolio(portfolioId, userId);
 
-        String symbolUpperCase = symbol.trim().toUpperCase(Locale.ROOT);
-        // Check the holding doesn't already exist in the portfolio
-        boolean exists = holdingRepository.existsByPortfolioEntity_IdAndSymbol(portfolioId, symbolUpperCase);
+    String symbolUpperCase = symbol.trim().toUpperCase(Locale.ROOT);
+    // Check the holding doesn't already exist in the portfolio
+    boolean exists =
+        holdingRepository.existsByPortfolioEntity_IdAndSymbol(portfolioId, symbolUpperCase);
 
-       if (exists) {
-           throw new HoldingAlreadyExistsException("Holding Already exists");
-       }
-
-       HoldingEntity holdingEntity = new HoldingEntity(portfolioEntity,symbolUpperCase, quantity,averageCost);
-
-       return holdingRepository.save(holdingEntity);
+    if (exists) {
+      throw new HoldingAlreadyExistsException("Holding Already exists");
     }
 
-    @Transactional(readOnly = true)
-    public HoldingEntity getHolding (Long portfolioId, Long holdingId) {
+    HoldingEntity holdingEntity =
+        new HoldingEntity(portfolioEntity, symbolUpperCase, quantity, averageCost);
 
-        return holdingRepository.findByPortfolioEntity_IdAndId(portfolioId, holdingId).orElseThrow(() -> new HoldingNotFoundException("Holding not found"));
-    }
+    return holdingRepository.save(holdingEntity);
+  }
 
-    @Transactional(readOnly = true)
-    public List<HoldingEntity> getHoldings (Long portfolioId) {
+  @Transactional(readOnly = true)
+  public HoldingEntity getHolding(Long portfolioId, Long holdingId) {
 
-        return holdingRepository.findByPortfolioEntity_Id(portfolioId);
-    }
+    return holdingRepository
+        .findByPortfolioEntity_IdAndId(portfolioId, holdingId)
+        .orElseThrow(() -> new HoldingNotFoundException("Holding not found"));
+  }
 
-    @Transactional(readOnly = true)
-    public Optional<HoldingEntity> findHoldingBySymbol (Long portfolioId, String symbol) {
+  @Transactional(readOnly = true)
+  public List<HoldingEntity> getHoldings(Long portfolioId) {
 
-        return holdingRepository.findByPortfolioEntity_IdAndSymbol(portfolioId, symbol);
-    }
+    return holdingRepository.findByPortfolioEntity_Id(portfolioId);
+  }
+
+  @Transactional(readOnly = true)
+  public Optional<HoldingEntity> findHoldingBySymbol(Long portfolioId, String symbol) {
+
+    return holdingRepository.findByPortfolioEntity_IdAndSymbol(portfolioId, symbol);
+  }
 }

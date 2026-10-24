@@ -23,39 +23,45 @@ import java.util.List;
 @AllArgsConstructor
 public class TransactionApiDelegateImpl implements TransactionsApiDelegate {
 
-    private final UserService userService;
-    private final TransactionService transactionService;
-    @Override
-    public ResponseEntity<TransactionResponse> createTransaction(Long portfolioId, CreateTransactionRequest createTransactionRequest) {
+  private final UserService userService;
+  private final TransactionService transactionService;
 
-        // TODO Replace development identity with authenticated JWT subject
-        String testExternalAuthId = "dev-user-123";
-        String symbol = createTransactionRequest.getSymbol();
-        TransactionType transactionType = TransactionType.valueOf(createTransactionRequest.getType().name());
-        BigDecimal quantity = createTransactionRequest.getQuantity();
-        BigDecimal pricePerShare = createTransactionRequest.getPricePerShare();
+  @Override
+  public ResponseEntity<TransactionResponse> createTransaction(
+      Long portfolioId, CreateTransactionRequest createTransactionRequest) {
 
-        UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
+    // TODO Replace development identity with authenticated JWT subject
+    String testExternalAuthId = "dev-user-123";
+    String symbol = createTransactionRequest.getSymbol();
+    TransactionType transactionType =
+        TransactionType.valueOf(createTransactionRequest.getType().name());
+    BigDecimal quantity = createTransactionRequest.getQuantity();
+    BigDecimal pricePerShare = createTransactionRequest.getPricePerShare();
 
-        TransactionEntity transactionEntity = transactionService.createTransaction(portfolioId, userEntity.getId(), symbol, transactionType, quantity, pricePerShare);
+    UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
 
-        TransactionResponse transactionResponse = TransactionMapper.mapToResponse(transactionEntity);
+    TransactionEntity transactionEntity =
+        transactionService.createTransaction(
+            portfolioId, userEntity.getId(), symbol, transactionType, quantity, pricePerShare);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(transactionResponse);
-    }
+    TransactionResponse transactionResponse = TransactionMapper.mapToResponse(transactionEntity);
 
-    @Override
-    public ResponseEntity<List<TransactionResponse>> getTransactions(Long portfolioId) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(transactionResponse);
+  }
 
-        // TODO Replace development identity with authenticated JWT subject
-        String testExternalAuthId = "dev-user-123";
-        UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
+  @Override
+  public ResponseEntity<List<TransactionResponse>> getTransactions(Long portfolioId) {
 
-        List<TransactionEntity> transactionEntityList = transactionService.getTransactions(portfolioId, userEntity.getId());
+    // TODO Replace development identity with authenticated JWT subject
+    String testExternalAuthId = "dev-user-123";
+    UserEntity userEntity = userService.findOrCreateUser(testExternalAuthId);
 
-        List<TransactionResponse> responseEntityList = transactionEntityList.stream().map(TransactionMapper::mapToResponse).toList();
+    List<TransactionEntity> transactionEntityList =
+        transactionService.getTransactions(portfolioId, userEntity.getId());
 
-        return ResponseEntity.ok(responseEntityList);
-    }
+    List<TransactionResponse> responseEntityList =
+        transactionEntityList.stream().map(TransactionMapper::mapToResponse).toList();
+
+    return ResponseEntity.ok(responseEntityList);
+  }
 }

@@ -9,7 +9,7 @@ class UserServiceSpec extends Specification {
     UserRepository userRepository = Mock(UserRepository)
     UserService userService = new UserService(userRepository)
 
-    def"Find a user if they exist"() {
+    def "Find a user if they exist"() {
         given: "There is a user persisted in the database"
 
         String externalAuthId = "dummyId123"
@@ -24,7 +24,7 @@ class UserServiceSpec extends Specification {
         result == existingUser
     }
 
-    def"Create a user if they do not exist"() {
+    def "Create a user if they do not exist"() {
         given: "There is no user found by the repository"
 
         String externalAuthId = "dummyId123"
@@ -34,7 +34,7 @@ class UserServiceSpec extends Specification {
 
         then: "Verify our retrieval did not return a user and that the save was called"
         1 * userRepository.findByExternalAuthId(externalAuthId) >> Optional.empty()
-        1 * userRepository.save({it.externalAuthId == externalAuthId}) >> {UserEntity user -> user}
+        1 * userRepository.save({ it.externalAuthId == externalAuthId }) >> { UserEntity user -> user }
 
     }
 }

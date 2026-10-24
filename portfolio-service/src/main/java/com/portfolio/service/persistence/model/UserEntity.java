@@ -14,14 +14,15 @@ import java.util.Objects;
 @NoArgsConstructor
 public class UserEntity extends AuditableEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(name = "external_auth_id", nullable = false, unique = true)
-    private String externalAuthId;
+  @Column(name = "external_auth_id", nullable = false, unique = true)
+  private String externalAuthId;
 
-    public UserEntity(String externalAuthId) {
-        this.externalAuthId = Objects.requireNonNull(externalAuthId, "External authentication ID cannot be null");
-    }
+  public UserEntity(String externalAuthId) {
+    this.externalAuthId =
+        Objects.requireNonNull(externalAuthId, "External authentication ID cannot be null");
+  }
 }

@@ -21,120 +21,123 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class TransactionService {
 
-    private final TransactionRepository transactionRepository;
-    private final PortfolioService portfolioService;
-    private final HoldingService holdingService;
+  private final TransactionRepository transactionRepository;
+  private final PortfolioService portfolioService;
+  private final HoldingService holdingService;
 
-    @Transactional
-    public TransactionEntity createTransaction(Long portfolioId, Long userId, String symbol, TransactionType type, BigDecimal quantity, BigDecimal pricePerShare) {
+  @Transactional
+  public TransactionEntity createTransaction(
+      Long portfolioId,
+      Long userId,
+      String symbol,
+      TransactionType type,
+      BigDecimal quantity,
+      BigDecimal pricePerShare) {
 
-        // Validate transaction
-        validateTransaction(symbol, type, quantity, pricePerShare);
+    // Validate transaction
+    validateTransaction(symbol, type, quantity, pricePerShare);
 
-        // Check if portfolio exists
-        portfolioService.getPortfolio(portfolioId, userId);
+    // Check if portfolio exists
+    portfolioService.getPortfolio(portfolioId, userId);
 
-        String symbolUpperCase = symbol.trim().toUpperCase(Locale.ROOT);
+    String symbolUpperCase = symbol.trim().toUpperCase(Locale.ROOT);
 
-        Optional<HoldingEntity> holdingEntityOpt = holdingService.findHoldingBySymbol(portfolioId, symbolUpperCase);
+    Optional<HoldingEntity> holdingEntityOpt =
+        holdingService.findHoldingBySymbol(portfolioId, symbolUpperCase);
 
-        HoldingEntity holdingEntity;
+    HoldingEntity holdingEntity;
 
-        if (type == TransactionType.BUY){
+    if (type == TransactionType.BUY) {
 
-            holdingEntity =  processBuyTransaction(holdingEntityOpt, portfolioId, userId, symbolUpperCase, quantity, pricePerShare);
+      holdingEntity =
+          processBuyTransaction(
+              holdingEntityOpt, portfolioId, userId, symbolUpperCase, quantity, pricePerShare);
 
-        } else if (type == TransactionType.SELL) {
+    } else if (type == TransactionType.SELL) {
 
-            holdingEntity =  processSellTransaction(holdingEntityOpt, quantity);
-        } else {
-            throw new IllegalArgumentException("Invalid transaction type");
-        }
-
-        TransactionEntity transactionEntity = new TransactionEntity(holdingEntity, type, quantity, pricePerShare);
-        return transactionRepository.save(transactionEntity);
+      holdingEntity = processSellTransaction(holdingEntityOpt, quantity);
+    } else {
+      throw new IllegalArgumentException("Invalid transaction type");
     }
 
-    @Transactional(readOnly = true)
-    public List<TransactionEntity> getTransactions(Long portfolioId, Long userId) {
+    TransactionEntity transactionEntity =
+        new TransactionEntity(holdingEntity, type, quantity, pricePerShare);
+    return transactionRepository.save(transactionEntity);
+  }
 
-        // Validate portfolio belongs to the user
-        portfolioService.getPortfolio(portfolioId, userId);
+  @Transactional(readOnly = true)
+  public List<TransactionEntity> getTransactions(Long portfolioId, Long userId) {
 
-        return transactionRepository.findByHoldingEntity_PortfolioEntity_IdOrderByExecutedAtDesc(portfolioId);
+    // Validate portfolio belongs to the user
+    portfolioService.getPortfolio(portfolioId, userId);
+
+    return transactionRepository.findByHoldingEntity_PortfolioEntity_IdOrderByExecutedAtDesc(
+        portfolioId);
+  }
+
+  private void validateTransaction(
+      String symbol, TransactionType type, BigDecimal quantity, BigDecimal pricePerShare) {
+
+    if (StringUtils.isBlank(symbol)) {
+      throw new IllegalArgumentException("Symbol is null or blank");
     }
 
-    private void validateTransaction(
-            String symbol,
-            TransactionType type,
-            BigDecimal quantity,
-            BigDecimal pricePerShare) {
-
-        if ( StringUtils.isBlank(symbol) ) {
-            throw new IllegalArgumentException("Symbol is null or blank");
-        }
-
-        if (type == null) {
-            throw new IllegalArgumentException("Transaction type is required");
-        }
-
-        if (quantity == null || quantity.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Quantity is null or less than 0");
-        }
-
-        if (pricePerShare == null || pricePerShare.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Price per share is null or less than 0");
-        }
+    if (type == null) {
+      throw new IllegalArgumentException("Transaction type is required");
     }
 
-    private HoldingEntity processBuyTransaction(
-            Optional<HoldingEntity> holdingEntityOpt,
-            Long portfolioId,
-            Long userId,
-            String symbolUpperCase,
-            BigDecimal quantity,
-            BigDecimal pricePerShare) {
-
-        if (holdingEntityOpt.isEmpty()) {
-            return holdingService.createHolding(
-                    portfolioId,
-                    userId,
-                    symbolUpperCase,
-                    quantity,
-                    pricePerShare
-            );
-        }
-        HoldingEntity holdingEntity = holdingEntityOpt.get();
-
-        BigDecimal currentQuantity = holdingEntity.getQuantity();
-        BigDecimal newQuantity = currentQuantity.add(quantity);
-
-        BigDecimal existingCost = currentQuantity.multiply(holdingEntity.getAverageCost());
-        BigDecimal purchaseCost = quantity.multiply(pricePerShare);
-        BigDecimal totalCost = existingCost.add(purchaseCost);
-
-        BigDecimal newAverageCost = totalCost.divide(
-                newQuantity, 4, RoundingMode.HALF_UP
-        );
-
-        holdingEntity.setQuantity(newQuantity);
-        holdingEntity.setAverageCost(newAverageCost);
-
-        return holdingEntity;
+    if (quantity == null || quantity.compareTo(BigDecimal.ZERO) <= 0) {
+      throw new IllegalArgumentException("Quantity is null or less than 0");
     }
 
-    private HoldingEntity processSellTransaction(Optional<HoldingEntity> holdingEntityOpt, BigDecimal quantity) {
-        if (holdingEntityOpt.isEmpty()) {
-            throw new HoldingNotFoundException("Holding not found");
-        }
-        HoldingEntity holdingEntity = holdingEntityOpt.get();
-        BigDecimal currentQuantity = holdingEntity.getQuantity();
-        if (currentQuantity.compareTo(quantity) < 0) {
-            throw new InsufficientSharesException("Current quantity of shares is less than requested shares to sell");
-        }
-        BigDecimal remainingQuantity = currentQuantity.subtract(quantity);
-        holdingEntity.setQuantity(remainingQuantity);
-
-        return holdingEntity;
+    if (pricePerShare == null || pricePerShare.compareTo(BigDecimal.ZERO) <= 0) {
+      throw new IllegalArgumentException("Price per share is null or less than 0");
     }
+  }
+
+  private HoldingEntity processBuyTransaction(
+      Optional<HoldingEntity> holdingEntityOpt,
+      Long portfolioId,
+      Long userId,
+      String symbolUpperCase,
+      BigDecimal quantity,
+      BigDecimal pricePerShare) {
+
+    if (holdingEntityOpt.isEmpty()) {
+      return holdingService.createHolding(
+          portfolioId, userId, symbolUpperCase, quantity, pricePerShare);
+    }
+    HoldingEntity holdingEntity = holdingEntityOpt.get();
+
+    BigDecimal currentQuantity = holdingEntity.getQuantity();
+    BigDecimal newQuantity = currentQuantity.add(quantity);
+
+    BigDecimal existingCost = currentQuantity.multiply(holdingEntity.getAverageCost());
+    BigDecimal purchaseCost = quantity.multiply(pricePerShare);
+    BigDecimal totalCost = existingCost.add(purchaseCost);
+
+    BigDecimal newAverageCost = totalCost.divide(newQuantity, 4, RoundingMode.HALF_UP);
+
+    holdingEntity.setQuantity(newQuantity);
+    holdingEntity.setAverageCost(newAverageCost);
+
+    return holdingEntity;
+  }
+
+  private HoldingEntity processSellTransaction(
+      Optional<HoldingEntity> holdingEntityOpt, BigDecimal quantity) {
+    if (holdingEntityOpt.isEmpty()) {
+      throw new HoldingNotFoundException("Holding not found");
+    }
+    HoldingEntity holdingEntity = holdingEntityOpt.get();
+    BigDecimal currentQuantity = holdingEntity.getQuantity();
+    if (currentQuantity.compareTo(quantity) < 0) {
+      throw new InsufficientSharesException(
+          "Current quantity of shares is less than requested shares to sell");
+    }
+    BigDecimal remainingQuantity = currentQuantity.subtract(quantity);
+    holdingEntity.setQuantity(remainingQuantity);
+
+    return holdingEntity;
+  }
 }

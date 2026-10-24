@@ -30,16 +30,18 @@ class UserRepositorySpec extends Specification {
         registry.add("spring.datasource.password", postgres::getPassword)
     }
 
-    @Autowired UserRepository userRepository
-    @Autowired EntityManager entityManager
+    @Autowired
+    UserRepository userRepository
+    @Autowired
+    EntityManager entityManager
 
-    def"Persist a user entity and retrieve by id"(){
+    def "Persist a user entity and retrieve by id"() {
         given: "Create a User entity"
 
         UserEntity userEntity = new UserEntity("dummyId123")
 
         when: "The User is saved"
-        UserEntity savedUser= userRepository.save(userEntity)
+        UserEntity savedUser = userRepository.save(userEntity)
 
         entityManager.flush()
         entityManager.clear()
@@ -47,19 +49,19 @@ class UserRepositorySpec extends Specification {
         Optional<UserEntity> retrievedUser =
                 userRepository.findById(savedUser.id)
 
-        then:"Verify the user was persisted with correct values"
+        then: "Verify the user was persisted with correct values"
         savedUser.id != null
         retrievedUser.isPresent()
         retrievedUser.get().externalAuthId == userEntity.externalAuthId
     }
 
-    def"Persist a user entity and retrieve by externalAuthId"(){
+    def "Persist a user entity and retrieve by externalAuthId"() {
         given: "Create a User entity"
 
         UserEntity userEntity = new UserEntity("dummyId123")
 
         when: "The User is saved"
-        UserEntity savedUser= userRepository.save(userEntity)
+        UserEntity savedUser = userRepository.save(userEntity)
 
         entityManager.flush()
         entityManager.clear()
@@ -67,13 +69,13 @@ class UserRepositorySpec extends Specification {
         Optional<UserEntity> retrievedUser =
                 userRepository.findByExternalAuthId(savedUser.externalAuthId)
 
-        then:"Verify the user was persisted with correct values"
+        then: "Verify the user was persisted with correct values"
         savedUser.id != null
         retrievedUser.isPresent()
         retrievedUser.get().externalAuthId == userEntity.externalAuthId
     }
 
-    def"Return empty when externalAuthId doesn't match the existing user"(){
+    def "Return empty when externalAuthId doesn't match the existing user"() {
         given: "Create a User entity"
 
         UserEntity userEntity = new UserEntity("dummyId123")
@@ -87,7 +89,7 @@ class UserRepositorySpec extends Specification {
         Optional<UserEntity> retrievedUser =
                 userRepository.findByExternalAuthId("nonexistingId")
 
-        then:"Verify no user matches the requested externalAuthId"
+        then: "Verify no user matches the requested externalAuthId"
         retrievedUser.isEmpty()
     }
 }

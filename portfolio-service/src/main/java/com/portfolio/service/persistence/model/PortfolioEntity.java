@@ -15,21 +15,20 @@ import java.util.Objects;
 @NoArgsConstructor
 public class PortfolioEntity extends AuditableEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @JoinColumn(name = "owner_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    private UserEntity userEntity;
+  @JoinColumn(name = "owner_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  private UserEntity userEntity;
 
-    @Setter
-    @Column(name = "name", nullable = false)
-    private String name;
+  @Setter
+  @Column(name = "name", nullable = false)
+  private String name;
 
-    public PortfolioEntity(UserEntity userEntity, String name){
-        this.userEntity = Objects.requireNonNull(userEntity, "Owner cannot be null");
-        this.name = Objects.requireNonNull(name, "Name cannot be null");
-
-    }
+  public PortfolioEntity(UserEntity userEntity, String name) {
+    this.userEntity = Objects.requireNonNull(userEntity, "Owner cannot be null");
+    this.name = Objects.requireNonNull(name, "Name cannot be null");
+  }
 }

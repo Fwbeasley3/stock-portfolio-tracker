@@ -12,22 +12,21 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-    @Transactional
-    public UserEntity findOrCreateUser(String externalAuthId) {
+  @Transactional
+  public UserEntity findOrCreateUser(String externalAuthId) {
 
-        Optional<UserEntity> userEntityOpt = userRepository.findByExternalAuthId(externalAuthId);
+    Optional<UserEntity> userEntityOpt = userRepository.findByExternalAuthId(externalAuthId);
 
-        //check if user is present and return the user
-        if (userEntityOpt.isPresent()) {
-            return userEntityOpt.get();
-        }
-
-        //otherwise create and save a user
-        UserEntity userEntity = new UserEntity(externalAuthId);
-
-        return userRepository.save(userEntity);
-
+    // check if user is present and return the user
+    if (userEntityOpt.isPresent()) {
+      return userEntityOpt.get();
     }
+
+    // otherwise create and save a user
+    UserEntity userEntity = new UserEntity(externalAuthId);
+
+    return userRepository.save(userEntity);
+  }
 }
