@@ -3,18 +3,43 @@ services:
     image: postgres:18
     container_name: portfolio-postgres
     environment:
-      POSTGRES_DB: portfolio_db
-      POSTGRES_USER: portfolio_user
-      POSTGRES_PASSWORD: portfolio_dev_password
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "127.0.0.1:5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U portfolio_user -d portfolio_db" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 5s
       timeout: 5s
       retries: 5
+
+  portfolio-service:
+    build:
+      context: .
+      dockerfile: portfolio-service/Dockerfile
+    ports:
+      - "127.0.0.1:8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
+      MARKET_DATA_GRPC_HOST: market-data-service
+      MARKET_DATA_GRPC_PORT: 9090
+    depends_on:
+      postgres:
+        condition: service_healthy
+      market-data-service:
+        condition: service_started
+
+  market-data-service:
+    build:
+      context: .
+      dockerfile: market-data-service/Dockerfile
+    ports:
+      - "127.0.0.1:9090:9090"
 
 volumes:
   postgres_data:
