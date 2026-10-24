@@ -60,7 +60,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
         <!-- Spock Framework -->
         <dependency>
             <groupId>org.spockframework</groupId>
@@ -68,7 +67,6 @@
             <version>${spock.version}</version>
             <scope>test</scope>
         </dependency>
-
         <!-- Spock Spring Integration -->
         <dependency>
             <groupId>org.spockframework</groupId>
@@ -76,19 +74,27 @@
             <version>${spock.version}</version>
             <scope>test</scope>
         </dependency>
-
         <!-- PostgreSQL Testcontainers -->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
             <scope>test</scope>
         </dependency>
-
         <!-- Spring Boot Testcontainers Integration -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-testcontainers</artifactId>
             <scope>test</scope>
+        </dependency>
+        <!-- gRPC client Dependencies -->
+        <dependency>
+            <groupId>com.portfolio</groupId>
+            <artifactId>portfolio-contracts</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty-shaded</artifactId>
         </dependency>
     </dependencies>
 
